@@ -356,9 +356,8 @@ __wt_meta_block_metadata(WT_SESSION_IMPL *session, const char *config, WT_CKPT *
      */
     WT_ERR(__wt_config_gets(session, filecfg, "encryption", &cval));
     WT_ERR(__wt_buf_fmt(session, b,
-      "encryption=%.*s,"
-      "block_metadata_encrypted=%s,block_metadata=[%.*s]",
-      (int)cval.len, cval.str, kencryptor == NULL ? "false" : "true", (int)metadata_len, metadata));
+      "encryption=%.*s,block_metadata_encrypted=%s,block_metadata=[%.*s]", (int)cval.len, cval.str,
+      kencryptor == NULL ? "false" : "true", (int)metadata_len, metadata));
     WT_ERR(__wt_strndup(session, b->data, b->size, &ckpt->block_metadata));
 
 err:
@@ -772,8 +771,9 @@ __ckpt_blkmod_to_meta(WT_SESSION_IMPL *session, WT_ITEM *buf, WT_CKPT *ckpt)
         if (!F_ISSET(blk, WT_BLOCK_MODS_VALID))
             continue;
         WT_RET(__wt_raw_to_hex(session, blk->bitstring.data, blk->bitstring.size, &bitstring));
-        WT_RET(__wt_buf_catfmt(session, buf, "%s\"%s\"=(id=%" PRIu32 ",granularity=%" PRIu64
-                                             ",nbits=%" PRIu64 ",offset=%" PRIu64 ",blocks=%.*s)",
+        WT_RET(__wt_buf_catfmt(session, buf,
+          "%s\"%s\"=(id=%" PRIu32 ",granularity=%" PRIu64 ",nbits=%" PRIu64 ",offset=%" PRIu64
+          ",blocks=%.*s)",
           i == 0 ? "" : ",", blk->id_str, i, blk->granularity, blk->nbits, blk->offset,
           (int)bitstring.size, (char *)bitstring.data));
         /* The hex string length should match the appropriate number of bits. */
@@ -925,9 +925,8 @@ __ckpt_version_chk(WT_SESSION_IMPL *session, const char *fname, const char *conf
       (majorv == WT_BTREE_MAJOR_VERSION_MIN && minorv < WT_BTREE_MINOR_VERSION_MIN) ||
       (majorv == WT_BTREE_MAJOR_VERSION_MAX && minorv > WT_BTREE_MINOR_VERSION_MAX))
         WT_RET_MSG(session, EACCES,
-          "%s is an unsupported WiredTiger source file version %d.%d"
-          "; this WiredTiger build only supports versions from %d.%d "
-          "to %d.%d",
+          "%s is an unsupported WiredTiger source file version %d.%d; this WiredTiger build only "
+          "supports versions from %d.%d to %d.%d",
           fname, majorv, minorv, WT_BTREE_MAJOR_VERSION_MIN, WT_BTREE_MINOR_VERSION_MIN,
           WT_BTREE_MAJOR_VERSION_MAX, WT_BTREE_MINOR_VERSION_MAX);
     return (0);
